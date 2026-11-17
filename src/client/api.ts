@@ -1,7 +1,8 @@
 import type { Pack } from '../shared/types';
+import { getPin } from './net';
 
 async function request<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
+  const res = await fetch(url, { ...init, headers: { ...(init?.headers as Record<string, string> | undefined), 'x-host-pin': getPin() } });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error((body as { error?: string }).error ?? `Request failed (${res.status})`);
   return body as T;

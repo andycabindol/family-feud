@@ -39,3 +39,12 @@ Every question needs 4–8 answers with whole-number points; invalid rows are sk
 ## Data
 
 Custom packs and the in-progress game are stored as JSON in `./data` (override with `DATA_DIR`).
+
+## Deploying (Render)
+
+1. Push this repo to GitHub, then in Render choose **New → Blueprint** and select it (it reads `render.yaml`).
+2. When asked for `HOST_PIN`, enter the PIN you'll type on your phone at `/host`.
+3. Open `https://<your-service>.onrender.com/` on the TV and `/host` on your phone.
+
+`HOST_PIN` is optional locally. When set, only a host that knows it can change the game or packs; the TV page stays open.
+The disk (`DATA_DIR=/var/data`) keeps custom packs, the played-questions memory and the in-progress game across restarts.

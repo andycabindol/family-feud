@@ -1,0 +1,21 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Needs a paid instance because saved packs / played questions / the in-progress game live on a disk.
+services:
+  - type: web
+    name: family-feud
+    runtime: node
+    plan: starter
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/info
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: DATA_DIR
+        value: /var/data
+      - key: HOST_PIN
+        sync: false # Render asks for this when you create the service
+    disk:
+      name: family-feud-data
+      mountPath: /var/data
+      sizeGB: 1

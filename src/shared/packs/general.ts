@@ -1,0 +1,31 @@
+import { builtInPack } from './compact';
+
+export const general = builtInPack(
+  'general',
+  'General / Classic',
+  'Classic Family Feud-style questions about everyday life.',
+  [
+    `Name something you do first thing in the morning | Daily Life | e | Brush Your Teeth:30:brush teeth ; Use the Bathroom:20:pee,go to the bathroom,potty ; Drink Coffee:16:coffee,have coffee ; Take a Shower:14:shower,wash up ; Check Your Phone:10:phone,look at phone ; Turn Off the Alarm:6:snooze,hit snooze ; Get Dressed:4`,
+    `Name something people lose all the time | Daily Life | e | Keys:30:car keys,house keys ; Phone:22:cell phone,cellphone ; Remote Control:14:remote,tv remote ; Wallet:12:purse ; Glasses:8:sunglasses,reading glasses ; Socks:6:sock ; Umbrella:4`,
+    `Name a reason people stay up late | Daily Life | e | Watching TV:28:tv,movies,watch a movie,netflix ; Working:18:work,homework,studying,study ; Party:14:partying,socializing ; On Their Phone:12:phone,scrolling,social media ; Can't Sleep:10:insomnia,stress,worry ; Playing Games:8:video games,gaming ; Reading:6:book`,
+    `Name something you might find in a junk drawer | Home | e | Batteries:22:battery ; Tape:18:scotch tape,duct tape ; Scissors:14 ; Pens:13:pen,pencils,pencil ; Rubber Bands:11:rubber band ; Keys:10:old keys ; Takeout Menus:8:menus,takeout menu`,
+    `Name something people do when they are bored | Daily Life | e | Watch TV:30:tv,movies,netflix ; Scroll on Their Phone:24:phone,social media,play on phone ; Eat:14:snack,eat snacks ; Sleep:10:nap,take a nap ; Play Video Games:10:video games,games ; Clean:5:clean house ; Go for a Walk:4:walk`,
+    `Name a place people go on vacation | Travel | e | Beach:34:the beach,hawaii,florida,cruise ; Disney World:16:disneyland,disney,orlando ; Mountains:12:camping,cabin,skiing ; Europe:10:paris,london,italy ; Las Vegas:10:vegas ; New York:8:nyc,new york city ; Mexico:6:cancun`,
+    `Name something people do at a wedding | Events | e | Dance:34:dancing,boogie ; Eat Cake:20:cake,cut the cake ; Cry:14:crying,tear up ; Kiss:12:the kiss,kissing ; Drink:10:drink alcohol,toast,champagne ; Take Pictures:6:photos,pictures,take photos ; Throw Rice:4:throw confetti,throw flowers`,
+    `Name something you do at a red light | Driving | e | Check Your Phone:30:phone,text,texting,look at your phone ; Wait:20:sit,stop,sit there ; Listen to Music:14:radio,change the song,music ; Look Around:10:look at other drivers,people watch ; Eat or Drink:10:eat,drink,sip coffee,snack ; Fix Hair or Makeup:8:check mirror,makeup,mirror ; Yell:5:honk,get angry`,
+    `Name something people complain about | Daily Life | e | Weather:24:the weather,hot,cold,rain ; Traffic:20 ; Work:16:their job,my boss,boss ; Taxes:14 ; Prices:12:gas prices,inflation,money ; Neighbors:8:noisy neighbors ; Politics:4`,
+    `Name a pet people have | Animals | e | Dog:50:puppy ; Cat:30:kitten ; Fish:8:goldfish ; Bird:5:parrot,parakeet ; Hamster:4:guinea pig,rabbit ; Snake:2:lizard`,
+    `Name something that is often late | Daily Life | e | Mail:22:the mail,package,packages ; Bus:20:train,the bus ; Teenagers:16:kids ; Flights:14:plane,airplane ; Husband:10:spouse ; Bills:8:rent,payment ; Paychecks:6:check,pay`,
+    `Name something people do in the shower | Home | e | Sing:46:sing songs,belt out a tune ; Wash Hair:20:shampoo,wash their hair ; Think:12:daydream,plan ; Shave:10:shave legs ; Pee:6:use the bathroom ; Cry:4`,
+    `Name a job kids dream of having | Jobs | e | Doctor:20:nurse ; Teacher:16 ; Police Officer:14:cop,police ; Firefighter:14:fireman ; Astronaut:12:space ; Athlete:10:football player,basketball player,sports ; Vet:8:veterinarian,animal doctor`,
+    `Name something you do with a pillow | Home | e | Sleep on It:38:sleep,rest your head,lay on it ; Hug It:16:cuddle,snuggle ; Pillow Fight:14:throw it,hit someone ; Hide Under It:10:cover your head,hide ; Prop Yourself Up:10:sit on it,lean on it,prop up ; Scream into It:8:cry into it,yell ; Fluff It:4`,
+    `Name something you wait in line for | Daily Life | e | Concert Tickets:22:concert,tickets ; Roller Coaster:20:rides,amusement park ; Bank:14:the bank ; Grocery Checkout:14:groceries,store,checkout ; Bathroom:12:restroom ; Movies:10:movie,movie theater ; DMV:6`,
+    `Name something people do at a barbecue | Events | e | Eat:28:eat burgers,eat hot dogs ; Grill:26:cook,cook meat,grill meat,grill food ; Drink:14:beer,drink beer ; Play Games:12:cornhole,yard games,play cards ; Swim:8:go swimming,pool ; Socialize:8:talk,chat,hang out`,
+    `Name something that is hard to do in the dark | Daily Life | e | See:28:read,find things ; Walk:20:find your way,walk around,navigate ; Find a Light Switch:14:find the light,turn on light ; Drive:12:driving ; Cook:10:cooking ; Sleep:8 ; Put on Clothes:6:get dressed,match clothes`,
+    `Name something people do before leaving the house | Daily Life | e | Lock the Door:30:lock up,lock door ; Check Their Keys:20:grab keys,get keys,keys ; Put on Shoes:14:shoes,get dressed ; Check Their Phone:12:grab phone,phone,wallet ; Turn Off Lights:10:lights,turn lights off ; Brush Teeth:6 ; Say Goodbye:4:kiss goodbye`,
+    `Name something you do at a stoplight when it turns green | Driving | m | Drive:60:go,hit the gas ; Honk:20:beep ; Wake Up:8:look up ; Look Up from Phone:6:stop texting`,
+    `Name a snack people eat at the movies | Food | e | Popcorn:50 ; Candy:16:m&ms,skittles,twizzlers ; Soda:12:pop,coke,drink ; Nachos:8 ; Pretzel:5:soft pretzel ; Hot Dog:4:hotdog`,
+    `Name something a person does when they are nervous | Feelings | e | Bite Nails:28:bite fingernails,chew nails ; Sweat:20:sweaty palms,sweaty hands ; Shake:14:tremble,shaking ; Pace:12:walk back and forth ; Tap Foot:8:fidget,tap fingers ; Stutter:6:stammer,talk fast ; Throw Up:5:puke,get sick,vomit`,
+    `Name a reason someone might call in sick | Jobs | e | Fever:24:flu,they are sick,cold ; Stomach Bug:20:upset stomach,food poisoning,throwing up ; Headache:16:migraine ; Doctor Appointment:12:have to go to the doctor ; Kid is Sick:10:sick child,child is sick ; Hangover:8:too much partying ; Mental Health Day:6:stress,tired`,
+  ],
+);

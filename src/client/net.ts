@@ -8,25 +8,7 @@ export interface GameConnection {
   receivedAt: number;
   connected: boolean;
   error: { id: number; message: string } | null;
-  /** The server wants the host PIN (host role only). */
-  needsPin: boolean;
   send: (action: Action) => void;
-}
-
-const PIN_KEY = 'ff-pin';
-export function getPin(): string {
-  try {
-    return localStorage.getItem(PIN_KEY) ?? '';
-  } catch {
-    return '';
-  }
-}
-export function savePin(pin: string) {
-  try {
-    localStorage.setItem(PIN_KEY, pin);
-  } catch {
-    /* ignore */
-  }
 }
 
 export function useGame(role: 'display' | 'host'): GameConnection {
@@ -34,7 +16,6 @@ export function useGame(role: 'display' | 'host'): GameConnection {
   const [receivedAt, setReceivedAt] = useState(0);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<GameConnection['error']>(null);
-  const [needsPin, setNeedsPin] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const errId = useRef(0);
 
@@ -50,18 +31,14 @@ export function useGame(role: 'display' | 'host'): GameConnection {
       ws.onopen = () => {
         attempt = 0;
         setConnected(true);
-        const hello: ClientMessage = { type: 'hello', role, pin: role === 'host' ? getPin() : undefined };
+        const hello: ClientMessage = { type: 'hello', role };
         ws.send(JSON.stringify(hello));
       };
       ws.onmessage = (ev) => {
         const msg = JSON.parse(ev.data) as ServerMessage;
         if (msg.type === 'state') {
-          setNeedsPin(false);
           setView(msg.view);
           setReceivedAt(performance.now());
-        } else if (msg.code === 'auth') {
-          setNeedsPin(true);
-          if (msg.message === 'Wrong PIN.') setError({ id: ++errId.current, message: msg.message });
         } else setError({ id: ++errId.current, message: msg.message });
       };
       ws.onclose = () => {
@@ -93,5 +70,5 @@ export function useGame(role: 'display' | 'host'): GameConnection {
     ws.send(JSON.stringify(msg));
   }, []);
 
-  return { view, receivedAt, connected, error, needsPin, send };
+  return { view, receivedAt, connected, error, send };
 }

@@ -2,7 +2,6 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { WebSocketServer, type WebSocket } from 'ws';
 import { type GameState, GameError, initialState, toView } from '../src/shared/game';
@@ -18,35 +17,6 @@ const DIST_DIR = path.join(ROOT, 'dist');
 const PACKS_FILE = path.join(DATA_DIR, 'packs.json');
 const GAME_FILE = path.join(DATA_DIR, 'game.json');
 const PLAYED_FILE = path.join(DATA_DIR, 'played.json');
-
-// Optional host PIN (set HOST_PIN in the environment when the server is reachable from the internet).
-// With a PIN: only a host that supplies it can change the game or packs; the TV page stays open to everyone.
-const HOST_PIN = (process.env.HOST_PIN ?? '').trim();
-
-function pinOk(candidate: unknown): boolean {
-  if (!HOST_PIN) return true;
-  if (typeof candidate !== 'string') return false;
-  const a = crypto.createHash('sha256').update(candidate).digest();
-  const b = crypto.createHash('sha256').update(HOST_PIN).digest();
-  return crypto.timingSafeEqual(a, b);
-}
-
-// Slow down PIN guessing: 8 wrong tries per IP per 10 minutes.
-const failures = new Map<string, { n: number; since: number }>();
-function tooManyFailures(ip: string): boolean {
-  const f = failures.get(ip);
-  return !!f && Date.now() - f.since < 600_000 && f.n >= 8;
-}
-function noteFailure(ip: string) {
-  const f = failures.get(ip);
-  if (!f || Date.now() - f.since >= 600_000) failures.set(ip, { n: 1, since: Date.now() });
-  else f.n++;
-}
-/** Client IP (Render and similar hosts put the real one in x-forwarded-for). */
-function clientIp(req: http.IncomingMessage): string {
-  const fwd = String(req.headers['x-forwarded-for'] ?? '').split(',')[0].trim();
-  return fwd || req.socket.remoteAddress || 'unknown';
-}
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
@@ -184,8 +154,6 @@ const MIME: Record<string, string> = {
   '.json': 'application/json',
   '.png': 'image/png',
   '.ico': 'image/x-icon',
-  '.mp3': 'audio/mpeg',
-  '.woff2': 'font/woff2',
 };
 
 function serveStatic(req: http.IncomingMessage, res: http.ServerResponse) {
@@ -204,17 +172,7 @@ function serveStatic(req: http.IncomingMessage, res: http.ServerResponse) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
   try {
-    if (url.pathname === '/api/info') return json(res, 200, { lan: lanUrls(), pinRequired: !!HOST_PIN });
-
-    // Reading is open; anything that changes data needs the host PIN (when one is set).
-    if (req.method !== 'GET' && url.pathname.startsWith('/api/')) {
-      const ip = clientIp(req);
-      if (tooManyFailures(ip)) return json(res, 429, { error: 'Too many wrong PINs. Try again later.' });
-      if (!pinOk(req.headers['x-host-pin'])) {
-        noteFailure(ip);
-        return json(res, 401, { error: 'Host PIN required. Open /host and enter it first.' });
-      }
-    }
+    if (url.pathname === '/api/info') return json(res, 200, { lan: lanUrls() });
 
     if (url.pathname === '/api/packs' && req.method === 'GET') return json(res, 200, customPacks);
 
@@ -254,10 +212,8 @@ const server = http.createServer(async (req, res) => {
 // ------------------------------------------------------------------ WebSocket
 
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 20 * 1024 * 1024 });
-const authed = new WeakSet<WebSocket>();
 
-wss.on('connection', (ws, req) => {
-  const ip = clientIp(req);
+wss.on('connection', (ws) => {
   ws.on('message', (data) => {
     let msg: ClientMessage;
     try {
@@ -266,20 +222,11 @@ wss.on('connection', (ws, req) => {
       return;
     }
     if (msg.type === 'hello') {
-      if (msg.role === 'host') {
-        if (tooManyFailures(ip)) return send(ws, { type: 'error', message: 'Too many wrong PINs. Try again later.', code: 'auth' });
-        if (!pinOk(msg.pin)) {
-          if (msg.pin) noteFailure(ip); // an empty PIN is just the first visit
-          return send(ws, { type: 'error', message: msg.pin ? 'Wrong PIN.' : 'Enter the host PIN.', code: 'auth' });
-        }
-        authed.add(ws);
-      }
       clients.set(ws, msg.role);
       send(ws, { type: 'state', view: viewNow() });
       return;
     }
     if (msg.type === 'action') {
-      if (HOST_PIN && !authed.has(ws)) return send(ws, { type: 'error', message: 'Enter the host PIN.', code: 'auth' });
       try {
         session = step(session, msg.action, { rng: Math.random, now: Date.now() });
         persistSoon();
@@ -306,5 +253,4 @@ wss.on('connection', (ws, req) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Family Feud server on :${PORT}`);
   for (const ip of lanUrls()) console.log(`  LAN: http://${ip}:${PORT}`);
-  console.log(HOST_PIN ? '  Host PIN is required for /host.' : '  No HOST_PIN set: anyone who can reach this server can host.');
 });

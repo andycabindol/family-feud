@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { savePin, useGame } from '../net';
+import { useGame } from '../net';
 import { FM_TARGET, MAX_STRIKES, fmTotal, type GameView } from '../../shared/game';
 import { matchAnswer } from '../../shared/text';
 import { QuestionDetails } from '../ui';
@@ -10,8 +10,6 @@ type Send = ReturnType<typeof useGame>['send'];
 export function Host() {
   const conn = useGame('host');
   const { view: v, send } = conn;
-
-  if (conn.needsPin) return <PinGate error={conn.error?.message} />;
 
   return (
     <div className="host">
@@ -38,36 +36,6 @@ export function Host() {
       )}
       {!conn.connected && <div className="toast" style={{ bottom: 100 }}>Reconnecting…</div>}
       {conn.error && <div className="toast">{conn.error.message}</div>}
-    </div>
-  );
-}
-
-/** Shown when the server has a HOST_PIN and this phone hasn't entered it (or entered it wrong). */
-function PinGate({ error }: { error?: string }) {
-  const [pin, setPin] = useState('');
-  const submit = () => {
-    if (!pin.trim()) return;
-    savePin(pin.trim());
-    location.reload();
-  };
-  return (
-    <div className="host">
-      <div className="h-body stack">
-        <h2>Host PIN</h2>
-        <input
-          className="h-input"
-          type="password"
-          inputMode="numeric"
-          autoComplete="current-password"
-          autoFocus
-          value={pin}
-          placeholder="Enter PIN"
-          onChange={(e) => setPin(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && submit()}
-        />
-        {error && <div className="msg">{error}</div>}
-        <button className="primary" style={{ minHeight: 52 }} onClick={submit}>Continue</button>
-      </div>
     </div>
   );
 }
